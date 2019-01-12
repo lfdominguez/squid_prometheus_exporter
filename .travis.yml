@@ -11,10 +11,14 @@ git:
 
 script:
   - mkdir build
+  - GOOS=linux     GOARCH=amd64 go get -t -v ./...
+  - GOOS=linux     GOARCH=386   go get -t -v ./...
+  - GOOS=windows   GOARCH=amd64 go get -t -v ./...
+  - GOOS=windows   GOARCH=386   go get -t -v ./...
   - GOOS=linux   GOARCH=amd64 go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-linux-amd64
-  - GOOS=linux   GOARCH=i386  go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-linux-i386
+  - GOOS=linux   GOARCH=386   go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-linux-i386
   - GOOS=windows GOARCH=amd64 go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-windows-amd64.exe
-  - GOOS=windows GOARCH=i386  go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-windows-i386.exe
+  - GOOS=windows GOARCH=386   go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-windows-i386.exe
 
 deploy:
   provider: releases
