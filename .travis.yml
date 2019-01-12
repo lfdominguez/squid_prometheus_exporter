@@ -8,27 +8,25 @@ go:
 git:
   depth: 1
 
+before_install:
+  - go get github.com/mitchellh/gox
+
 script:
   - mkdir build
-  - GOOS=linux     GOARCH=amd64 go get -t -v ./...
-  - GOOS=linux     GOARCH=386   go get -t -v ./...
-  - GOOS=windows   GOARCH=amd64 go get -t -v ./...
-  - GOOS=windows   GOARCH=386   go get -t -v ./...
-  - GOOS=linux   GOARCH=amd64 go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-linux-amd64
-  - GOOS=linux   GOARCH=386   go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-linux-i386
-  - GOOS=windows GOARCH=amd64 go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-windows-amd64.exe
-  - GOOS=windows GOARCH=386   go build -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" -o build/squid-conn-info-exporter-windows-i386.exe
+  - gox -verbose -output build/squid-exporter-{{.OS}}-{{.Arch}} -os "linux freebsd windows" -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}"
 
 deploy:
   provider: releases
   api_key:
-    secure: czRFuQ3p8IntxEhmekR0g+wier3jGAVg8jMvp3cq/4rPWhB/ggrNgJonjpm4ntZtjBZZCrDq+zwunc3H8mV3Szc5dmyTh9Bhbw0o/tLdmOvAXuyBwFID1TDEpqopDnUY4wl6mj+cQ1FjtMzXPSBb7P8GJnLHoXfJO+kwZS7Aay8eTzHuRJk1ULNhoWZLLqYZ9JfL3DfeKVqQnCjEUVbaf7fdzqvCjZCWGSZSJRm3qyTTLStP6brM8OazrK+sjSAaQEw8d989o1dlf45CIs6EQ43thkra88VFwtfKxKEpTJL4ZbDmb6cuk+rHckMIvLFb+gKEmCWeYLa4numzsYoU44H1ZQN28aOxI4LG0e6Gcmq92bLpcMzfRz78Klunx9nuVyUyAXS0WuAfEEtPy7RPcZZ4BeCXl25xa6W/NFxvW8NvXKzzx17eyW9OnQk0hiRA36V8WO9VeJg5PWet/9PPXjUZJ46MwMowSTEROcZHBEx0wtM7xeLclPzB9qDOsHHuogSocegNu8HDARQYPI/VncsnvNNPWUc3O9FTA8rg+AkXL1jMPA1T+zuBlsMesXNGKaJoBWjprxMncXqvaOhbhvdT5nYX5p6jQLL2XSciLkb4ySj6X7ka4Ah47QFDofJK72IUcDpaEo1IANJkY46ARzD95CU+wj6/fua+9GSPQ2I=
+    secure: "iZgNor2OZkiIE7BaupurNoLCIXRvmZGWJCSRqmvs1tFWK0qF8PYXLISVnwEiy4r+5RETfLKKYXj/gvg1GXxMZXyvGamNviciUllT40vFpHK9mRD+BpgX8zwIZ95wec8lPVPn/dr83ijtL51Rn/P6UDQBHP6fH3JzCp29uSE2/S48BLduKyJo2u7MM6+J2NOz2iNN+6cUItbrJGAQ8v5Z5q9tFyMRi57JmfD/Kz3nkkqxzrGeRcVBJTg0Vqq2qOoIAdTO3RD0N8OwxYUKEHo7OM76FsR6cVNgF62VkUlgC1Gj0Axl7lrLi1/sIAO68KJyPRgHc2fNPqWMSAX9bmZDNFcpYElEyVDQjvaPf7qCB7b5YAMfpCJD1CV7nhqX7257opfsc1foejppg7OotZJuUkYRF08vjsthgXG447DY/ID+HhwOhBpSUTqcxZJGmUf5UntFAow19MA7p4b/jSBSybKAgflDvlzmWjYuuidN3UyVyZFMjwuGM4+a5iFKkzq6rQ0c4ue/Ejyd0jZo87L01g26agz+2GLr+CtQSwvL5EBC/Oq1yEzFEa17b+GuDlVgIhyL5Ad7HHJigSxy3hY1dh7D/HEIlx72INiTIggRdydQQ2o/jaJDlo70wZAiXu7i/00MOqmfa4wknjLON5qPJIFOthpMxBv1lu+698Yfvb4="
   skip_cleanup: true
   file:
-    - build/squid-conn-info-exporter-linux-amd64
-    - build/squid-conn-info-exporter-linux-i386
-    - build/squid-conn-info-exporter-windows-amd64.exe
-    - build/squid-conn-info-exporter-windows-i386.exe
+    - build/squid-exporter-linux-amd64
+    - build/squid-exporter-linux-i386
+    - build/squid-exporter-freebsd-amd64
+    - build/squid-exporter-freebsd-i386
+    - build/squid-exporter-windows-amd64.exe
+    - build/squid-exporter-windows-i386.exe
   on:
     repo: lfdominguez/squid_conn_info_exporter
     tags: true
