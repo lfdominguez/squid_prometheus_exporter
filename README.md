@@ -5,6 +5,7 @@
 ![](https://img.shields.io/github/downloads/lfdominguez/squid_prometheus_exporter/total.svg)
 ![](https://img.shields.io/github/release-date/lfdominguez/squid_prometheus_exporter.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lfdominguez/squid_prometheus_exporter)](https://goreportcard.com/report/github.com/lfdominguez/squid_prometheus_exporter)
+[![Maintainability](https://api.codeclimate.com/v1/badges/4e10de65bb2e9fce7d2e/maintainability)](https://codeclimate.com/github/lfdominguez/squid_prometheus_exporter/maintainability)
 
 This project try to extract all the stats from manager page of Squid > 3.5 (in this version the squid manager can be acceded from HTTP endpoint directly using `/squid-internal-mgr/`). The metrics got from Squid are:
 
