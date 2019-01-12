@@ -45,5 +45,5 @@ deploy:
     - squid-exporter-windows-amd64.exe
     - squid-exporter-windows-386.exe
   on:
-    repo: lfdominguez/squid_conn_info_exporter
+    repo: lfdominguez/squid_prometheus_exporter
     tags: true
