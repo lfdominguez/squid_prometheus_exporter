@@ -1,0 +1,22 @@
+sudo: false
+
+language: go
+
+go:
+  - 1.x
+  - master
+
+gobuild_args: -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}"
+
+# Only clone the most recent commit.
+git:
+  depth: 1
+
+deploy:
+  provider: releases
+  api_key: 
+    secure: ""
+  file: bin/squid-exporter
+  skip_cleanup: true
+  on:
+    tags: true
