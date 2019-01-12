@@ -21,7 +21,7 @@ install:
   - go get -d -v ./...
 
 script:
-    - go build -o squid-exporter-$GIMME_OS-$GIMME_ARCH -v -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" ./...
+    - go build -o squid-exporter-${GIMME_OS}-${GIMME_ARCH} -v -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" ./...
 
 deploy:
   provider: releases
@@ -29,13 +29,13 @@ deploy:
     secure: "iZgNor2OZkiIE7BaupurNoLCIXRvmZGWJCSRqmvs1tFWK0qF8PYXLISVnwEiy4r+5RETfLKKYXj/gvg1GXxMZXyvGamNviciUllT40vFpHK9mRD+BpgX8zwIZ95wec8lPVPn/dr83ijtL51Rn/P6UDQBHP6fH3JzCp29uSE2/S48BLduKyJo2u7MM6+J2NOz2iNN+6cUItbrJGAQ8v5Z5q9tFyMRi57JmfD/Kz3nkkqxzrGeRcVBJTg0Vqq2qOoIAdTO3RD0N8OwxYUKEHo7OM76FsR6cVNgF62VkUlgC1Gj0Axl7lrLi1/sIAO68KJyPRgHc2fNPqWMSAX9bmZDNFcpYElEyVDQjvaPf7qCB7b5YAMfpCJD1CV7nhqX7257opfsc1foejppg7OotZJuUkYRF08vjsthgXG447DY/ID+HhwOhBpSUTqcxZJGmUf5UntFAow19MA7p4b/jSBSybKAgflDvlzmWjYuuidN3UyVyZFMjwuGM4+a5iFKkzq6rQ0c4ue/Ejyd0jZo87L01g26agz+2GLr+CtQSwvL5EBC/Oq1yEzFEa17b+GuDlVgIhyL5Ad7HHJigSxy3hY1dh7D/HEIlx72INiTIggRdydQQ2o/jaJDlo70wZAiXu7i/00MOqmfa4wknjLON5qPJIFOthpMxBv1lu+698Yfvb4="
   skip_cleanup: true
   file:
-    - build/squid-exporter-linux-amd64
-    - build/squid-exporter-linux-386
-    - build/squid-exporter-linux-arm
-    - build/squid-exporter-freebsd-amd64
-    - build/squid-exporter-freebsd-386
-    - build/squid-exporter-windows-amd64.exe
-    - build/squid-exporter-windows-386.exe
+    - squid-exporter-linux-amd64
+    - squid-exporter-linux-386
+    - squid-exporter-linux-arm
+    - squid-exporter-freebsd-amd64
+    - squid-exporter-freebsd-386
+    - squid-exporter-windows-amd64.exe
+    - squid-exporter-windows-386.exe
   on:
     repo: lfdominguez/squid_conn_info_exporter
     tags: true
