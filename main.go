@@ -1,22 +1,20 @@
 package main
 
 import (
-	"flag"
+	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
+	"github.com/jinzhu/configor"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/log"
+	"github.com/prometheus/common/version"
 )
 
 var (
-	addr        = flag.String("listen-address", ":9399", "The address to listen on for HTTP requests.")
-	squidURL    = flag.String("squid-url", "http://localhost:3128/", "Squid cache manager URL.")
-	enableOnly  = flag.String("enable-only", "", "Enable only the specific metrics. Can't be used with '-disable-only'")
-	disableOnly = flag.String("disable-only", "", "Disable only the specific metrics. Can't be used with '-enable-only'")
-
 	regexes   = make(map[string]*regexp.Regexp)
 	indexMaps = make(map[string]map[string]int)
 
@@ -24,6 +22,8 @@ var (
 
 	enables  = make(map[string]struct{})
 	disables = make(map[string]struct{})
+
+	exporter_config = newConfig()
 )
 
 func init() {
@@ -32,31 +32,40 @@ func init() {
 }
 
 func main() {
-	flag.Parse()
+	if *versionFlag {
+		fmt.Println(version.Print("squid_prometheus_exporter"))
+		os.Exit(0)
+	}
 
-	if *enableOnly != "" && *disableOnly != "" {
+	os.Setenv("CONFIGOR_ENV_PREFIX", "-")
+
+	if *configFile != "" {
+		configor.Load(&exporter_config, *configFile)
+	}
+
+	if exporter_config.EnableOnly != "" && exporter_config.DisableOnly != "" {
 		log.Fatal("You can't use enable-only and disable-only at same time.")
 	}
 
-	if *enableOnly != "" {
+	if exporter_config.EnableOnly != "" {
 		mode = true
-		for _, metric := range strings.Split(*enableOnly, ",") {
+		for _, metric := range strings.Split(exporter_config.EnableOnly, ",") {
 			enables[metric] = struct{}{}
 		}
 	}
 
-	if *disableOnly != "" {
+	if exporter_config.DisableOnly != "" {
 		mode = false
-		for _, metric := range strings.Split(*disableOnly, ",") {
+		for _, metric := range strings.Split(exporter_config.DisableOnly, ",") {
 			disables[metric] = struct{}{}
 		}
 	}
 
 	initActiveRequests()
 
-	log.Infof("Starting Server: %s", *addr)
+	log.Infof("Starting Server: %s", exporter_config.ListenAddress)
 
-	http.Handle("/metrics", promhttp.Handler())
+	http.Handle(exporter_config.MetricPath, promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`
 		<html lang="es">
@@ -65,14 +74,14 @@ func main() {
 		  </head>
 		  <body>
 		    <h1>Squid Exporter</h1>
-		    <p><a href="/metrics">Metrics</a></p>
-		  </body>
-		</html>`))
+		    <p><a href="` + exporter_config.MetricPath + `">Metrics</a></p>
+			</body>
+		  </html>`))
 	})
 	http.HandleFunc("/-/healthy", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
 	})
 
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Fatal(http.ListenAndServe(exporter_config.ListenAddress, nil))
 }
