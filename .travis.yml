@@ -2,15 +2,6 @@ sudo: false
 
 language: go
 
-env:
-  - GIMME_OS=linux GIMME_ARCH=amd64
-  - GIMME_OS=linux GIMME_ARCH=386
-  - GIMME_OS=linux GIMME_ARCH=arm
-  - GIMME_OS=freebsd GIMME_ARCH=amd64
-  - GIMME_OS=freebsd GIMME_ARCH=386
-  - GIMME_OS=windows GIMME_ARCH=amd64
-  - GIMME_OS=windows GIMME_ARCH=386
-
 go:
   - 1.x
 
@@ -21,7 +12,9 @@ install:
   - go get -d -v ./...
 
 script:
-    - go build -o squid-exporter-${GIMME_OS}-${GIMME_ARCH} -v -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}" ./...
+  - go get github.com/mitchellh/gox
+  - GOOS=windows go get -d -v ./...
+  - gox -verbose -output squid-exporter-{{.OS}}-{{.Arch}} -os "linux freebsd windows" -arch "amd64 386 arm arm64" -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}"
 
 deploy:
   provider: releases
@@ -32,6 +25,7 @@ deploy:
     - squid-exporter-linux-amd64
     - squid-exporter-linux-386
     - squid-exporter-linux-arm
+    - squid-exporter-linux-arm64
     - squid-exporter-freebsd-amd64
     - squid-exporter-freebsd-386
     - squid-exporter-windows-amd64.exe
