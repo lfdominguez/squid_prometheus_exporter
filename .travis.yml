@@ -13,7 +13,7 @@ before_install:
 
 script:
   - mkdir build
-  - gox -verbose -output build/squid-exporter-{{.OS}}-{{.Arch}} -os "linux freebsd windows" -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}"
+  - gox -verbose -output build/squid-exporter-{{.OS}}-{{.Arch}} -os "linux freebsd windows" -arch "amd64 386 arm arm64" -ldflags "-s -w -X main.Version=${TRAVIS_TAG} -X main.buildTime=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.commitId=${TRAVIS_COMMIT}"
 
 deploy:
   provider: releases
