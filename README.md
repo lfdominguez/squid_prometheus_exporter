@@ -1,6 +1,8 @@
 # Prometheus exporter for Squid Proxy
 [![Build Status](https://travis-ci.com/lfdominguez/squid_conn_info_exporter.svg?branch=master)](https://travis-ci.com/lfdominguez/squid_conn_info_exporter)
+[![](https://img.shields.io/github/release/lfdominguez/squid_conn_info_exporter.svg)](https://github.com/lfdominguez/squid_conn_info_exporter/releases)
 ![](https://img.shields.io/github/license/lfdominguez/squid_conn_info_exporter.svg)
+![](https://img.shields.io/github/downloads/lfdominguez/squid_conn_info_exporter/total.svg)
 
 This project try to extract all the stats from manager page of Squid > 3.5 (in this version the squid manager can be acceded from HTTP endpoint directly using `/squid-internal-mgr/`). The metrics got from Squid are:
 
