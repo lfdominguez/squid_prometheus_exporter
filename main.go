@@ -23,7 +23,7 @@ var (
 	enables  = make(map[string]struct{})
 	disables = make(map[string]struct{})
 
-	exporter_config = newConfig()
+	exporterConfig = newConfig()
 )
 
 func init() {
@@ -40,23 +40,23 @@ func main() {
 	os.Setenv("CONFIGOR_ENV_PREFIX", "-")
 
 	if *configFile != "" {
-		configor.Load(&exporter_config, *configFile)
+		configor.Load(&exporterConfig, *configFile)
 	}
 
-	if exporter_config.EnableOnly != "" && exporter_config.DisableOnly != "" {
+	if exporterConfig.EnableOnly != "" && exporterConfig.DisableOnly != "" {
 		log.Fatal("You can't use enable-only and disable-only at same time.")
 	}
 
-	if exporter_config.EnableOnly != "" {
+	if exporterConfig.EnableOnly != "" {
 		mode = true
-		for _, metric := range strings.Split(exporter_config.EnableOnly, ",") {
+		for _, metric := range strings.Split(exporterConfig.EnableOnly, ",") {
 			enables[metric] = struct{}{}
 		}
 	}
 
-	if exporter_config.DisableOnly != "" {
+	if exporterConfig.DisableOnly != "" {
 		mode = false
-		for _, metric := range strings.Split(exporter_config.DisableOnly, ",") {
+		for _, metric := range strings.Split(exporterConfig.DisableOnly, ",") {
 			disables[metric] = struct{}{}
 		}
 	}
@@ -64,9 +64,9 @@ func main() {
 	initActiveRequests()
 	initInfoRequests()
 
-	log.Infof("Starting Server: %s", exporter_config.ListenAddress)
+	log.Infof("Starting Server: %s", exporterConfig.ListenAddress)
 
-	http.Handle(exporter_config.MetricPath, promhttp.Handler())
+	http.Handle(exporterConfig.MetricPath, promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`
 		<html lang="es">
@@ -75,7 +75,7 @@ func main() {
 		  </head>
 		  <body>
 		    <h1>Squid Exporter</h1>
-		    <p><a href="` + exporter_config.MetricPath + `">Metrics</a></p>
+		    <p><a href="` + exporterConfig.MetricPath + `">Metrics</a></p>
 			</body>
 		  </html>`))
 	})
@@ -84,5 +84,5 @@ func main() {
 		w.Write([]byte("ok"))
 	})
 
-	log.Fatal(http.ListenAndServe(exporter_config.ListenAddress, nil))
+	log.Fatal(http.ListenAndServe(exporterConfig.ListenAddress, nil))
 }

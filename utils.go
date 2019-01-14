@@ -60,7 +60,7 @@ func registerMetric(name string, regex string, collector prometheus.Collector) {
 }
 
 func getSquidResponse(metric string) (matches [][]string, err bool) {
-	resp, errResty := resty.R().Get("http://" + exporter_config.SquidHost + ":" + strconv.Itoa(exporter_config.SquidPort) + "/squid-internal-mgr/" + metric)
+	resp, errResty := resty.R().Get("http://" + exporterConfig.SquidHost + ":" + strconv.Itoa(exporterConfig.SquidPort) + "/squid-internal-mgr/" + metric)
 
 	if errResty != nil {
 		log.Errorf("Error scraping squid '%s': %v", metric, err)

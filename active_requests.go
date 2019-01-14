@@ -1,9 +1,11 @@
 package main
 
 import (
+	"net/url"
 	"sync"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"golang.org/x/net/publicsuffix"
 )
 
 type activeRequestsCollector struct {
@@ -28,13 +30,13 @@ func initActiveRequests() {
 			activeRequestDataDown: prometheus.NewDesc(
 				prometheus.BuildFQName(namespace, "", "data_down"),
 				"How much data is downloaded.",
-				[]string{"connection", "ip", "uri", "username", "delay_pool"},
+				[]string{"connection", "ip", "uri", "tld", "tld_plus", "username", "delay_pool"},
 				nil,
 			),
 			activeRequestDuration: prometheus.NewDesc(
 				prometheus.BuildFQName(namespace, "", "duration"),
 				"Time elapsed on connection.",
-				[]string{"connection", "ip", "uri", "username", "delay_pool"},
+				[]string{"connection", "ip", "uri", "tld", "tld_plus", "username", "delay_pool"},
 				nil,
 			),
 		},
@@ -65,26 +67,44 @@ func (collector *activeRequestsCollector) Collect(ch chan<- prometheus.Metric) {
 	indexMap := indexMaps[whereAmI()]
 
 	for _, match := range matches {
+		connID := match[indexMap["ConnID"]]
+		IP := match[indexMap["IP"]]
+		uri := match[indexMap["URI"]]
+		user := match[indexMap["Username"]]
+		delay := match[indexMap["DelayPool"]]
+
+		tld := "unknown"
+		tldPlusOne := "unknown"
+
+		if parser, error := url.Parse(uri); error != nil {
+			tld, _ = publicsuffix.PublicSuffix(parser.Hostname())
+			tldPlusOne, _ = publicsuffix.EffectiveTLDPlusOne(parser.Hostname())
+		}
+
 		ch <- prometheus.MustNewConstMetric(
 			collector.activeRequestDataDown,
 			prometheus.GaugeValue,
 			getFloat(match[indexMap["DataDown"]]),
-			match[indexMap["ConnID"]],
-			match[indexMap["IP"]],
-			match[indexMap["URI"]],
-			match[indexMap["Username"]],
-			match[indexMap["DelayPool"]],
+			connID,
+			IP,
+			uri,
+			tld,
+			tldPlusOne,
+			user,
+			delay,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
 			collector.activeRequestDuration,
 			prometheus.GaugeValue,
 			getFloat(match[indexMap["Duration"]]),
-			match[indexMap["ConnID"]],
-			match[indexMap["IP"]],
-			match[indexMap["URI"]],
-			match[indexMap["Username"]],
-			match[indexMap["DelayPool"]],
+			connID,
+			IP,
+			uri,
+			tld,
+			tldPlusOne,
+			user,
+			delay,
 		)
 	}
 
