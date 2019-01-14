@@ -76,7 +76,7 @@ func (collector *activeRequestsCollector) Collect(ch chan<- prometheus.Metric) {
 		tld := "unknown"
 		tldPlusOne := "unknown"
 
-		if parser, error := url.Parse(uri); error != nil {
+		if parser, error := url.Parse(uri); error == nil {
 			tld, _ = publicsuffix.PublicSuffix(parser.Hostname())
 			tldPlusOne, _ = publicsuffix.EffectiveTLDPlusOne(parser.Hostname())
 		}
