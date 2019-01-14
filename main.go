@@ -62,7 +62,7 @@ func main() {
 	}
 
 	initActiveRequests()
-	initInfoRequests()
+	// initInfoRequests()
 
 	log.Infof("Starting Server: %s", exporterConfig.ListenAddress)
 
